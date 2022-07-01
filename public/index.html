@@ -1,0 +1,120 @@
+<html>
+    <head>
+        <script src="../ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="../releases/1.2.0/aframe.min-1.js"></script>
+        <script src="../js/aframe-extras.min-1.js"></script>
+        <script src="../aframe-look-at-component%400.8.0/dist/aframe-look-at-component.min.js"></script> 
+
+    </head>
+    <script>
+        AFRAME.registerComponent('clickhandler', {
+            schema: {
+                txt: {default:'default'},
+            },        
+            init: function () {
+                var data = this.data;
+                var el = this.el;        
+                el.addEventListener('click', function () {
+                    console.log(data.txt);
+                    cadena = data.txt.split("@")
+                    console.log(cadena[0]);
+                    posX = cadena[1];
+                    console.log(posX);
+                    posY = cadena[2];
+                    console.log(posY);
+                    posZ = cadena[3];
+                    console.log(posZ); 
+                    altura = 1.3+parseFloat(posY)
+                    console.log(altura)
+                    document.querySelector("#cameraWrapper").object3D.position.set(posX, altura, posZ);
+                    
+                    
+                    console.log("Rotation");
+                    console.log(document.querySelector("#cameraWrapper").components.camera.camera.rotation);
+                     console.log("Rotation Y");
+                    console.log(document.querySelector("#cameraWrapper").components.camera.camera.rotation.y);
+                    
+                    
+                    // `position` is a three.js Vector3.
+                    console.log("Position");
+                    console.log(document.querySelector("#cameraWrapper").object3D.position);
+                    
+                    
+                    document.querySelector("#cameraWrapper").object3D.rotation.set(
+                      THREE.Math.degToRad(15),
+                      THREE.Math.degToRad(30),
+                      THREE.Math.degToRad(90)
+                    );
+                    //document.querySelector("#cameraWrapper").object3D.rotation.x += Math.PI;
+                    
+                    
+                    //revisar esta parte para realmente apuntar al piano
+                    document.querySelector("#cameraWrapper").components.camera.camera.rotation.y = 135;
+                    
+                    document.querySelector("#cameraWrapper").components.camera.camera.rotation.x = 0;
+                    document.querySelector("#cameraWrapper").components.camera.camera.rotation.z = 0;
+                    
+                    objeto = document.querySelector("#"+cadena[0]).components;
+                    
+                    if(objeto["gltf-model"].attrValue.indexOf("seat_red") > 0){
+                        $("#"+cadena[0]).attr("gltf-model","recursos/seat_yellow/scene.gltf");
+                    } else{
+                        $("#"+cadena[0]).attr("gltf-model","recursos/seat_red/scene.gltf");            
+                    }
+                    
+                });        
+            }
+        });
+
+
+         AFRAME.registerComponent("rotate", {
+            init: function () {
+              document.body.onkeyup = (e) => {
+                if(e.keyCode == 32){
+                  console.log(this.el.components.camera.camera.rotation.y += 45)
+                }
+              }
+            }
+        });
+
+    </script>
+    <body>
+        <a-scene stats="">
+
+            <!--Recursos-->
+            <a-assets>
+                <img id="parquetTexture" src="../assets/parquet.jpg">
+                <img id="sky" src="../assets/Sky-1.jpg">
+                <a-asset-item id="seat_red" src="recursos/seat_red/scene.gltf"></a-asset-item>
+                <a-asset-item id="seat_yellow" src="recursos/seat_yellow/scene.gltf"></a-asset-item>
+                <a-asset-item id="seat_green" src="recursos/seat_green/scene.gltf"></a-asset-item>
+                <a-asset-item id="piano" src="recursos/piano/scene.gltf"></a-asset-item>
+            </a-assets>
+
+            <!--Cielo-->
+            <a-sky src="#sky" position="0 -200 -1"></a-sky>
+
+            <!--Suelo verde, repito textura-->
+            <a-plane position="0 0.25 -4" rotation="-90 0 0" width="200" height="200" src="#parquetTexture" repeat="100 100"></a-plane>
+
+            <a-entity position="0 0.25 -4" gltf-model="#seat_yellow" id="seat1" clickhandler="txt:seat1@0@0.25@-4"></a-entity>
+            <a-entity position="1 0.25 -4" gltf-model="#seat_red" id="seat2" clickhandler="txt:seat2@1@0.25@-4"></a-entity>
+            <a-entity position="2 0.25 -4" gltf-model="#seat_red" id="seat3" clickhandler="txt:seat3@2@0.25@-4"></a-entity>
+            <a-entity position="3 0.25 -4" gltf-model="#seat_green" id="seat4" clickhandler="txt:seat4@3@0.25@-4"></a-entity>
+
+            <a-entity position="0 0.35 -6" gltf-model="#seat_red" id="seat5" clickhandler="txt:seat5@0@0.35@-6"></a-entity>
+            <a-entity position="1 0.35 -6" gltf-model="#seat_red" id="seat6" clickhandler="txt:seat6@1@0.35@-6"></a-entity>
+            <a-entity position="2 0.35 -6" gltf-model="#seat_red" id="seat7" clickhandler="txt:seat7@2@0.35@-6"></a-entity>
+            <a-entity position="3 0.35 -6" gltf-model="#seat_red" id="seat8" clickhandler="txt:seat8@3@0.35@-6"></a-entity>
+
+
+            <a-entity position="1.5 0.25 4" scale="0.014 0.014 0.014" gltf-model="#piano" id="piano"></a-entity>
+
+            <a-entity cursor="rayOrigin:mouse"></a-entity>
+
+            <a-entity id='cameraWrapper' camera="userHeight: 1.6" look-controls="" position="0 1.6 0" rotate=""></a-entity>
+            <!--     <a-camera wasd-controls-enabled="false"></a-camera>-->
+
+        </a-scene>
+    </body>
+</html>
